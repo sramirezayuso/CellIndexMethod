@@ -73,5 +73,14 @@ def grid_position(pos, cell_size)
   return (pos/cell_size).floor
 end
 
+def distance_between_all_particles(particles)
+  particles.each_with_index do |p, index|
+    for i in index+1..particles.length-1
+      # Decide how the distance should be managed
+      distance = Math.hypot(p.x - particles[i].x, p.y - particles[i].y)
+    end
+  end
+end
+
 state = parse_input("Static100.txt", "Dynamic100.txt")
 pp align_grid(state).grid
