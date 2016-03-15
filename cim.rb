@@ -2,6 +2,8 @@
 
 require 'pp'
 require 'set'
+require './parser.rb'
+include Parser
 
 class State
   attr_reader :cell_size
@@ -19,7 +21,7 @@ end
 
 class Particle
   attr_reader :id, :color, :radius
-  attr_accessor :x, :y
+  attr_accessor :x, :y, :vx, :vy
 
   @@ids = 0
 
@@ -30,6 +32,8 @@ class Particle
       @color = color
       @x = nil
       @y = nil
+      @vx = nil
+      @vy = nil
   end
 
   def to_s()
@@ -37,32 +41,7 @@ class Particle
   end
 end
 
-def parse_input(static_filename, dynamic_filename)
-  time = nil
-  grid_size = nil
-  particle_number = nil
-  particles = []
-
-  File.open(static_filename).each_with_index do |line, index|
-    particle_number = line.to_i if index == 0
-    grid_size = line.to_i if index == 1
-    particles.push(Particle.new(line.split(" ").first.to_f, line.split(" ").last.to_i)) if index > 1
-  end
-
-  File.open(dynamic_filename).each_with_index do |line, index|
-    if index == 0
-      time = line.to_i
-    else
-      particles[index - 1].x = line.split(" ").first.to_f
-      particles[index - 1].y = line.split(" ").last.to_f
-    end
-  end
-
-  return State.new(time, grid_size, 1, particle_number, particles) # Change this to return array of states, one for each time
-end
-
 def align_grid(state)
-
   state.particles.each do |particle|
     x = particle.x
     y = particle.y
