@@ -13,7 +13,7 @@ class State
     @time = time
     @grid_size = grid_size
     @cell_size = cell_size
-    @grid = Hash.new
+    @grid = {}
     @particle_number = particle_number
     @particles = particles
   end  
@@ -41,6 +41,24 @@ class Particle
   end
 end
 
+class Cell
+  attr_accessor :i, :j
+
+  def initialize(i, j)
+    @i = i
+    @j = j
+  end
+
+  def eql?(other)
+    self.i == other.i && self.j == other.j
+  end
+
+  def hash
+    i.hash + j.hash
+  end
+end
+
+
 def align_grid(state)
   state.particles.each do |particle|
     x = particle.x
@@ -64,8 +82,9 @@ def align_grid(state)
 end
 
 def add_particle(grid, cell_size, x, y, particle)
-  grid[[grid_position(x, cell_size), grid_position(y, cell_size)]] = Set.new if grid[[grid_position(x, cell_size), grid_position(y, cell_size)]] == nil
-  grid[[grid_position(x, cell_size), grid_position(y, cell_size)]].add(particle)
+  cell = Cell.new(grid_position(x, cell_size), grid_position(y, cell_size))
+  grid[cell] = Set.new if grid[cell] == nil
+  grid[cell].add(particle)
   return grid
 end
 
@@ -82,6 +101,42 @@ def distance_between_all_particles(particles)
   end
 end
 
+def cell_index_method(state, rc)
+  file = File.open("output.txt", 'w')
+  close_particles = {}
+
+  state.particles.each do |p|
+    close_particles[p.id] = Set.new
+  end
+
+  grid = state.grid
+  grid.keys.each do |cell|
+    evaluate_neighbors(grid, close_particles, cell, cell, rc)
+    evaluate_neighbors(grid, close_particles, cell, Cell.new(cell.i, cell.j + 1), rc)
+    evaluate_neighbors(grid, close_particles, cell, Cell.new(cell.i + 1, cell.j - 1), rc)
+    evaluate_neighbors(grid, close_particles, cell, Cell.new(cell.i + 1, cell.j), rc)
+    evaluate_neighbors(grid, close_particles, cell, Cell.new(cell.i + 1, cell.j + 1), rc)
+  end
+
+  pp close_particles
+end
+
+def evaluate_neighbors(grid, close_particles, cell, other_cell, rc)
+  if grid.has_key?(other_cell)
+    particles = grid[cell]
+    other_particles = grid[other_cell]
+
+    particles.each do |p1|
+      other_particles.each do |p2|
+        if p1.id != p2.id && Math.hypot(p1.x - p2.x, p1.y - p2.y) <= 2*rc - p1.radius - p2.radius
+          close_particles[p1.id].add(p2.id)
+        end
+      end
+    end
+  end
+end
+
+
 m = ARGV[0].to_i
 rc = ARGV[1].to_f
 raise ArgumentError, "The amount of cells and particle interaction radius are both required" if m == nil || rc == nil
@@ -90,4 +145,5 @@ state = parse_input("Static100.txt", "Dynamic100.txt", m)
 rmax = state.particles.max {|a, b| a.radius <=> b.radius}.radius
 raise ArgumentError, "Wrong argument value: L/M > rc + 2*rmax" if state.cell_size <= rc + 2 * rmax
 
-#pp align_grid(state).grid
+align_grid(state)
+cell_index_method(state, rc)
