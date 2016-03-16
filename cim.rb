@@ -128,12 +128,16 @@ def evaluate_neighbors(grid, close_particles, cell, other_cell, rc)
 
     particles.each do |p1|
       other_particles.each do |p2|
-        if p1.id != p2.id && Math.hypot(p1.x - p2.x, p1.y - p2.y) <= 2*rc - p1.radius - p2.radius
+        if p1.id != p2.id && are_particles_neighbors(p1, p2, rc)
           close_particles[p1.id].add(p2.id)
         end
       end
     end
   end
+end
+
+def are_particles_neighbors(p1, p2, rc)
+  Math.hypot(p1.x - p2.x, p1.y - p2.y) - p1.radius - p2.radius <= rc
 end
 
 
