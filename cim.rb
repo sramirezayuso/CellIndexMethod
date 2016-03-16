@@ -3,7 +3,9 @@
 require 'pp'
 require 'set'
 require './parser.rb'
+require './printer.rb'
 include Parser
+include Printer
 
 class State
   attr_reader :cell_size
@@ -42,7 +44,7 @@ class Particle
 end
 
 class Cell
-  attr_accessor :i, :j
+  attr_reader :i, :j
 
   def initialize(i, j)
     @i = i
@@ -102,7 +104,6 @@ def distance_between_all_particles(particles)
 end
 
 def cell_index_method(state, rc)
-  file = File.open("output.txt", 'w')
   close_particles = {}
 
   state.particles.each do |p|
@@ -118,7 +119,7 @@ def cell_index_method(state, rc)
     evaluate_neighbors(grid, close_particles, cell, Cell.new(cell.i + 1, cell.j + 1), rc)
   end
 
-  pp close_particles
+  print_to_file(close_particles)
 end
 
 def evaluate_neighbors(grid, close_particles, cell, other_cell, rc)
