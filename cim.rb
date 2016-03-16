@@ -82,9 +82,12 @@ def distance_between_all_particles(particles)
   end
 end
 
-m = ARGV[0]
-rc = ARGV[1]
+m = ARGV[0].to_i
+rc = ARGV[1].to_f
 raise ArgumentError, "The amount of cells and particle interaction radius are both required" if m == nil || rc == nil
 
-state = parse_input("Static100.txt", "Dynamic100.txt", m.to_i)
-pp align_grid(state).grid
+state = parse_input("Static100.txt", "Dynamic100.txt", m)
+rmax = state.particles.max {|a, b| a.radius <=> b.radius}.radius
+raise ArgumentError, "Wrong argument value: L/M > rc + 2*rmax" if state.cell_size <= rc + 2 * rmax
+
+#pp align_grid(state).grid
