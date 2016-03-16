@@ -94,22 +94,33 @@ def grid_position(pos, cell_size)
   return (pos/cell_size).floor
 end
 
-def distance_between_all_particles(particles)
+def distance_between_all_particles(state, rc)
+  particles = state.particles
+  close_particles = initialize_close_particles_hash(particles)
   particles.each_with_index do |p, index|
     for i in index+1..particles.length-1
-      # Decide how the distance should be managed
-      distance = Math.hypot(p.x - particles[i].x, p.y - particles[i].y)
+      if are_particles_neighbors(p, particles[i], rc)
+        close_particles[p.id].add(particles[i].id)
+        close_particles[particles[i].id].add(p.id)
+      end
     end
   end
+  print_to_file(close_particles)
 end
 
-def cell_index_method(state, rc)
+# Returns a hash with all the particles ids as keys and an empty Set as value
+def initialize_close_particles_hash(particles)
   close_particles = {}
 
-  state.particles.each do |p|
+  particles.each do |p|
     close_particles[p.id] = Set.new
   end
 
+  return close_particles
+end
+
+def cell_index_method(state, rc)
+  close_particles = initialize_close_particles_hash(state.particles)
   grid = state.grid
   grid.keys.each do |cell|
     evaluate_neighbors(grid, close_particles, cell, cell, rc)
@@ -118,7 +129,6 @@ def cell_index_method(state, rc)
     evaluate_neighbors(grid, close_particles, cell, Cell.new(cell.i + 1, cell.j), rc)
     evaluate_neighbors(grid, close_particles, cell, Cell.new(cell.i + 1, cell.j + 1), rc)
   end
-
   print_to_file(close_particles)
 end
 
@@ -151,4 +161,4 @@ rmax = state.particles.max {|a, b| a.radius <=> b.radius}.radius
 raise ArgumentError, "Wrong argument value: L/M > rc + 2*rmax" if state.cell_size <= rc + 2 * rmax
 
 align_grid(state)
-cell_index_method(state, rc)
+distance_between_all_particles(state, rc)
