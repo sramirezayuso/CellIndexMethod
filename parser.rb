@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 module Parser
-  def parse_input(static_filename, dynamic_filename)
+  def parse_input(static_filename, dynamic_filename, row_amount)
     time = nil
     grid_size = nil
     particle_number = nil
@@ -25,6 +25,6 @@ module Parser
       end
     end
 
-    return State.new(time, grid_size, 1, particle_number, particles) # Change this to return array of states, one for each time
+    return State.new(time, grid_size, grid_size / row_amount, particle_number, particles) # Change this to return array of states, one for each time
   end
 end

@@ -82,5 +82,9 @@ def distance_between_all_particles(particles)
   end
 end
 
-state = parse_input("Static100.txt", "Dynamic100.txt")
+m = ARGV[0]
+rc = ARGV[1]
+raise ArgumentError, "The amount of cells and particle interaction radius are both required" if m == nil || rc == nil
+
+state = parse_input("Static100.txt", "Dynamic100.txt", m.to_i)
 pp align_grid(state).grid
