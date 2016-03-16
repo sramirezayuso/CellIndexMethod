@@ -2,6 +2,12 @@
 
 Implementation of the Cell Index Method in Ruby.
 
+## Usage
+
+```
+ruby cim.rb [cells_in_a_row] [radius_of_interaction]
+```
+
 ## Contributing
 
 1. Fork it!

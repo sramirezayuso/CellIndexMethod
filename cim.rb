@@ -95,8 +95,10 @@ def grid_position(pos, cell_size)
 end
 
 def distance_between_all_particles(state, rc)
+  start = Time.now
   particles = state.particles
   close_particles = initialize_close_particles_hash(particles)
+
   particles.each_with_index do |p, index|
     for i in index+1..particles.length-1
       if are_particles_neighbors(p, particles[i], rc)
@@ -105,6 +107,10 @@ def distance_between_all_particles(state, rc)
       end
     end
   end
+
+  finish = Time.now
+  puts "Force Brute Time: #{finish - start}"
+
   print_to_file(close_particles)
 end
 
@@ -120,8 +126,10 @@ def initialize_close_particles_hash(particles)
 end
 
 def cell_index_method(state, rc)
-  close_particles = initialize_close_particles_hash(state.particles)
+  start = Time.now
   grid = state.grid
+  close_particles = initialize_close_particles_hash(state.particles)
+
   grid.keys.each do |cell|
     evaluate_neighbors(grid, close_particles, cell, cell, rc)
     evaluate_neighbors(grid, close_particles, cell, Cell.new(cell.i, cell.j + 1), rc)
@@ -129,6 +137,10 @@ def cell_index_method(state, rc)
     evaluate_neighbors(grid, close_particles, cell, Cell.new(cell.i + 1, cell.j), rc)
     evaluate_neighbors(grid, close_particles, cell, Cell.new(cell.i + 1, cell.j + 1), rc)
   end
+
+  finish = Time.now
+  puts "Cell Index Method Time: #{finish - start}"
+
   print_to_file(close_particles)
 end
 
@@ -161,4 +173,5 @@ rmax = state.particles.max {|a, b| a.radius <=> b.radius}.radius
 raise ArgumentError, "Wrong argument value: L/M > rc + 2*rmax" if state.cell_size <= rc + 2 * rmax
 
 align_grid(state)
+cell_index_method(state, rc)
 distance_between_all_particles(state, rc)
