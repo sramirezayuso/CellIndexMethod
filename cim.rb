@@ -168,7 +168,7 @@ m = ARGV[0].to_i
 rc = ARGV[1].to_f
 raise ArgumentError, "The amount of cells and particle interaction radius are both required" if m == nil || rc == nil
 
-state = parse_input("Static100.txt", "Dynamic100.txt", m)
+state = parse_input("samples/Static100.txt", "samples/Dynamic100.txt", m)
 rmax = state.particles.max {|a, b| a.radius <=> b.radius}.radius
 raise ArgumentError, "Wrong argument value: L/M > rc + 2*rmax" if state.cell_size <= rc + 2 * rmax
 
