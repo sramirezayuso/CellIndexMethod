@@ -25,6 +25,6 @@ module Parser
       end
     end
 
-    return State.new(time, grid_size, grid_size / row_amount, particle_number, particles) # Change this to return array of states, one for each time
+    return State.new(time, grid_size, grid_size / row_amount.to_f, particle_number, particles) # Change this to return array of states, one for each time
   end
 end

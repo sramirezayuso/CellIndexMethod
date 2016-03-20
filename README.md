@@ -8,6 +8,8 @@ Implementation of the Cell Index Method in Ruby.
 ruby cim.rb [cells_in_a_row] [radius_of_interaction]
 ```
 
+b can also be sent as a third parameter to consider the boundaries of the adjacent cells
+
 ## Contributing
 
 1. Fork it!
